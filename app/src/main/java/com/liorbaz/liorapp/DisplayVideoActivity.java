@@ -1,25 +1,25 @@
 package com.liorbaz.liorapp;
 
-import android.app.Activity;
+//import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
+//import android.media.MediaPlayer;
+//import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+//import android.os.Message;
+//import android.support.annotation.Nullable;
+//import android.support.v4.app.Fragment;
+//import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+//import android.view.View;
+//import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.MediaController;
-import android.widget.VideoView;
+//import android.widget.MediaController;
+//import android.widget.VideoView;
 
 //public class DisplayVideoActivity extends FragmentActivity {
 //
