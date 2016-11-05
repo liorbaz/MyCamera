@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@android:color/black">
+
+    <WebView
+        android:id="@+id/WebView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+
+    <!--<fragment android:name="com.liorbaz.liorapp.DisplayVideoActivity$DisplayVideoWebFragment"-->
+              <!--android:id="@+id/fragment1"-->
+              <!--android:layout_width="match_parent"-->
+              <!--android:layout_height="match_parent"-->
+              <!--android:layout_centerHorizontal="true"-->
+              <!--android:layout_centerVertical="true"/>-->
+              <!--&lt;!&ndash;tools:layout="@layout/abc_action_menu_item_layout"/>&ndash;&gt;-->
+
+</RelativeLayout>

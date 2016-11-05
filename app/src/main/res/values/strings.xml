@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">PingVideo Application!</string>
+    <string name="ping_result_str"></string>
+    <string name="text_space"></string>
+    <string name="button_ping_str">PING</string>
+    <string name="left_header_str">Left Side (55%)!!!</string>
+    <string name="middle_header_str">Middle (15%)</string>
+    <string name="right_header_str">Right Side (30%) !!!</string>
+    <!--<string name="edit_message_str">8.8.8.8</string>-->
+    <string name="edit_message_ping_str">127.0.0.1</string>
+
+    <string name="video_result_str"></string>
+    <string name="button_video_str">STREAM VIDEO</string>
+    <!--<string name="edit_message_video_str">http://techslides.com/demos/sample-videos/small.mp4</string>-->
+    <!--<string name="edit_message_video_str">http://192.168.14.123:8081/video.mjpg</string>-->
+    <string name="edit_message_video_str">http://79.181.146.38:8081/video.mjpg</string>
+    <string name="loading_video_str">Please wait!\nThe rush is from the devil!</string>
+    <string name="buffering_video_str">Buffering...</string>
+</resources>
+ 
