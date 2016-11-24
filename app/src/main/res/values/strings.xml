@@ -13,7 +13,9 @@
     <string name="button_video_str">STREAM VIDEO</string>
     <!--<string name="edit_message_video_str">http://techslides.com/demos/sample-videos/small.mp4</string>-->
     <!--<string name="edit_message_video_str">http://192.168.14.123:8081/video.mjpg</string>-->
-    <string name="edit_message_video_str">http://79.181.146.38:8081/video.mjpg</string>
+    <!--<string name="edit_message_video_str">http://109.64.37.111:8081/video.mjpg</string>-->
+    <!--<string name="edit_message_video_str">http://192.168.14.156:8081</string>-->
+    <string name="edit_message_video_str">http://109.64.37.111:48461</string>
     <string name="loading_video_str">Please wait!\nThe rush is from the devil!</string>
     <string name="buffering_video_str">Buffering...</string>
 </resources>
