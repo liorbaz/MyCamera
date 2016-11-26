@@ -10,6 +10,7 @@
     <string name="video_result_str"></string>
     <string name="button_video_str">STREAM VIDEO</string>
     <string name="loading_video_str">Please wait!\nThe rush is from the devil!</string>
+    <string name="buffering_video_str">Buffering&#8230;</string>
     <string name="arrow_desc_left">Left</string>
     <string name="arrow_desc_right">Right</string>
 
