@@ -15,9 +15,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        tools:context=".DisplayVideoActivity">
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/LeftBtn"
@@ -25,7 +23,8 @@
             android:layout_height="@dimen/video_button_size"
             android:background="@android:color/transparent"
             android:contentDescription="@string/arrow_desc_right"
-            android:src="@drawable/btn_arrow_selector_left"/>
+            android:src="@drawable/btn_arrow_selector_left"
+            android:onClick="sendLeft"/>
 
         <ImageButton
             android:id="@+id/RightBtn"
@@ -33,6 +32,7 @@
             android:layout_height="@dimen/video_button_size"
             android:background="@android:color/transparent"
             android:contentDescription="@string/arrow_desc_right"
-            android:src="@drawable/btn_arrow_selector_right"/>
+            android:src="@drawable/btn_arrow_selector_right"
+            android:onClick="sendRight"/>
     </LinearLayout>
 </LinearLayout>

@@ -1,103 +1,29 @@
 package com.liorbaz.liorapp;
 
-//import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 //import android.media.MediaPlayer;
 //import android.net.Uri;
 import android.os.Bundle;
-//import android.os.Message;
-//import android.support.annotation.Nullable;
-//import android.support.v4.app.Fragment;
-//import android.support.v4.app.FragmentActivity;
+import android.os.CountDownTimer;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-//import android.view.LayoutInflater;
 import android.view.MenuItem;
-//import android.view.View;
-//import android.view.ViewGroup;
+import android.view.View;
 import android.webkit.WebView;
-//import android.widget.MediaController;
-//import android.widget.VideoView;
+import android.widget.Toast;
 
-//public class DisplayVideoActivity extends FragmentActivity {
+//    /**
+
+//     * Event handler called when the user presses "Right Arrow"
+//    /**
 //
-//    // Declare variables
-//    private static final String LOG_TAG = "-- -- MyDebug -->";
-//
-//    private ProgressDialog mDialog;
-//    private VideoView mVideo;
-//    static private String Url;
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        Log.i(LOG_TAG, "FragmentActivity:onCreate()");
-//
-//        //Get the layout from video_main.xml
-//        setContentView(R.layout.activity_display_video);
-//
-//        //Find your VideoView in your video_main.xml layout
-////        mVideo = (VideoView) findViewById(R.id.VideoView);
-//
-//        //Display Back button
-////        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//
-//        //Get URL from user (MainActivity)
-//        Intent intent = getIntent();
-//        Url = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 //    }
-//
-//    static public class DisplayVideoWebFragment extends Fragment {
-//
-//        private View mRoot;
-//        private WebView mWebView;
-//
-//        @Override
-//        public void onCreate(Bundle savedInstanceState) {
-//            super.onCreate(savedInstanceState);
-//            Log.i(LOG_TAG, "Fragment:onCreate()");
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
-//                container, @Nullable Bundle savedInstanceState) {
-//
-//            Log.i(LOG_TAG, "Fragment:onCreateView()");
-//            mRoot = inflater.inflate(R.layout.activity_display_video, container, false);
-//            mWebView = (WebView) mRoot.findViewById(R.id.WebView);
-//            mWebView.loadUrl(Url);
-//            Log.i(LOG_TAG, "URL="+Url);
-//            return mRoot;
-//        }
-//
-//        @Override
-//        public void onDestroy() {
-//            super.onDestroy();
-//
-//        }
-//
-//        @Override
-//        public void onResume() {
-//            super.onResume();
-//        }
-//
-//        /**
-//         * handles incoming messages from Hotspot service
-//         *
-//         * @param msg
-//         */
-//
-//        private void handleIncomingMessageFromService(Message msg) {
-//        }
-//    }
-//
-//
-//}
-
-
+//        Toast.makeText(this, "Left!!!", Toast.LENGTH_LONG).show();
+//    public void sendLeft(View view) {
+//     */
+//     * Event handler called when the user presses "Left Arrow"
 public class DisplayVideoActivity extends AppCompatActivity {
 
     // Declare variables
@@ -105,6 +31,7 @@ public class DisplayVideoActivity extends AppCompatActivity {
 
     private ProgressDialog mDialog;
     private WebView mWebView;
+    private Toast mToastToShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +50,11 @@ public class DisplayVideoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String Url = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 //        Uri videoStreamUri = Uri.parse(Url);
-        Log.i(LOG_TAG, "DisplayVideoActivity: - URL string ="+Url);
+        Log.i(LOG_TAG, "DisplayVideoActivity: - URL string =" + Url);
 
         /********************************
-        * Execute StreamVideo AsyncTask
-        ********************************/
+         * Execute StreamVideo AsyncTask
+         ********************************/
         // Create a progressbar
         mDialog = new ProgressDialog(DisplayVideoActivity.this);
 
@@ -143,8 +70,8 @@ public class DisplayVideoActivity extends AppCompatActivity {
         mDialog.show();
 
         /*******************
-        * Media Controller
-        *******************/
+         * Media Controller
+         *******************/
         try {
             // Start the MediaController
 //            MediaController mediacontroller = new MediaController(DisplayVideoActivity.this);
@@ -160,8 +87,7 @@ public class DisplayVideoActivity extends AppCompatActivity {
             mDialog.dismiss();
             Log.e(LOG_TAG, e.getMessage());
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             mDialog.dismiss();
         }
 
@@ -195,4 +121,45 @@ public class DisplayVideoActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    public void showToast(String msg, int toastDurationInMilliSeconds) {
+
+        // Set the toast and duration
+        mToastToShow = Toast.makeText(this, msg, Toast.LENGTH_LONG);
+
+        // Set the countdown to display the toast
+        CountDownTimer toastCountDown;
+        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 1000 /*Tick duration*/) {
+            public void onTick(long millisUntilFinished) {
+                mToastToShow.show();
+            }
+
+            public void onFinish() {
+                mToastToShow.cancel();
+            }
+        };
+
+        // Show the toast and starts the countdown
+        mToastToShow.show();
+        toastCountDown.start();
+    }
+
+    /**
+     * Event handler called when the user presses "Left Arrow"
+     */
+    public void sendLeft(View view) {
+        // Show the toast and starts the countdown
+        showToast("Left", 200);
+//        Toast.makeText(this, "Left!!!", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Event handler called when the user presses "Right Arrow"
+     */
+    public void sendRight(View view) {
+        showToast("Right", 200);
+//        Toast.makeText(this, "Right!!!", Toast.LENGTH_SHORT).show();
+    }
+
 }
