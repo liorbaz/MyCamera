@@ -4,26 +4,34 @@
               android:layout_height="fill_parent"
               android:background="@android:color/black"
               android:gravity="center"
-              android:orientation="horizontal"
+              android:orientation="vertical"
               tools:context=".DisplayVideoActivity">
-
-    <ImageButton
-        android:id="@+id/LeftBtn"
-        android:layout_width="@dimen/video_button_size"
-        android:layout_height="@dimen/video_button_size"
-        android:background="@android:color/transparent"
-        android:src="@drawable/btn_arrow_selector_left"/>
 
     <WebView
         android:id="@+id/WebView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"/>
 
-    <ImageButton
-        android:id="@+id/RightBtn"
-        android:layout_width="@dimen/video_button_size"
-        android:layout_height="@dimen/video_button_size"
-        android:background="@android:color/transparent"
-        android:src="@drawable/btn_arrow_selector_right"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        tools:context=".DisplayVideoActivity">
+
+        <ImageButton
+            android:id="@+id/LeftBtn"
+            android:layout_width="@dimen/video_button_size"
+            android:layout_height="@dimen/video_button_size"
+            android:background="@android:color/transparent"
+            android:src="@drawable/btn_arrow_selector_left"/>
+
+        <ImageButton
+            android:id="@+id/RightBtn"
+            android:layout_width="@dimen/video_button_size"
+            android:layout_height="@dimen/video_button_size"
+            android:background="@android:color/transparent"
+            android:src="@drawable/btn_arrow_selector_right"/>
+    </LinearLayout>
 </LinearLayout>

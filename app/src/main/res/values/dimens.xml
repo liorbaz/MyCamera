@@ -4,5 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="video_button_size">30dp</dimen>
+    <dimen name="video_button_size">150dp</dimen>
 </resources>
