@@ -9,21 +9,19 @@
 
     <ImageButton
         android:id="@+id/LeftBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:layout_width="@dimen/video_button_size"
+        android:layout_height="@dimen/video_button_size"
         android:src="@drawable/btn_arrow_selector_left"/>
 
     <WebView
         android:id="@+id/WebView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"/>
 
     <ImageButton
         android:id="@+id/RightBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:layout_width="@dimen/video_button_size"
+        android:layout_height="@dimen/video_button_size"
         android:src="@drawable/btn_arrow_selector_right"/>
 </LinearLayout>
