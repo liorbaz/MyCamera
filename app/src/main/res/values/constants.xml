@@ -4,7 +4,7 @@
     <!--======================-->
 
     <!--<string name="edit_message_str">8.8.8.8</string>-->
-    <string name="edit_message_ping_str"></string>
+    <string name="edit_message_ping_str">127.0.0.1</string>
 
 
 
@@ -14,6 +14,6 @@
     <!--<string name="edit_message_video_str">http://192.168.14.123:8081/video.mjpg</string>-->
     <!--<string name="edit_message_video_str">http://109.64.37.111:8081/video.mjpg</string>-->
     <!--<string name="edit_message_video_str">http://192.168.14.156:8081</string>-->
-    <string name="edit_message_video_str"></string>
+    <string name="edit_message_video_str">http://109.64.37.111:111111111</string>
 
 </resources>
