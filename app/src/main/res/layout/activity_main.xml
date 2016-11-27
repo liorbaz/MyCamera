@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black"
-    android:textStyle="bold"
-    tools:context=".MainActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/black"
+              android:orientation="vertical"
+              android:textStyle="bold"
+              tools:context=".MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -14,57 +14,58 @@
         android:text="@string/text_space"/>
 
     <Button
+        android:id="@+id/button_ping"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_ping_str"
-        android:id="@+id/button_ping"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:onClick="pingDst" />
+        android:layout_centerVertical="true"
+        android:onClick="pingDst"
+        android:text="@string/button_ping_str"/>
 
-    <EditText android:id="@+id/edit_message_ping"
+    <EditText
+        android:id="@+id/edit_message_ping"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hint="@string/edit_message_ping_str"
         android:textColor="@android:color/white"
-        android:textColorHint="@android:color/darker_gray"
-        android:hint="@string/edit_message_ping_str" />
+        android:textColorHint="@android:color/darker_gray"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_space" />
+        android:text="@string/text_space"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="57dp"
-        tools:context=".MainActivity">
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="57dp"
+                  android:orientation="horizontal"
+                  tools:context=".MainActivity">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.55"
-            android:textColor="@android:color/holo_orange_dark"
             android:background="@android:color/holo_red_dark"
-            android:text="@string/left_header_str" />
+            android:text="@string/left_header_str"
+            android:textColor="@android:color/holo_orange_dark"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.15"
-            android:textColor="@android:color/background_light"
             android:background="@android:color/holo_green_dark"
-            android:text="@string/middle_header_str" />
+            android:text="@string/middle_header_str"
+            android:textColor="@android:color/background_light"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:textColor="@android:color/holo_red_dark"
             android:background="@android:color/holo_blue_dark"
-            android:text="@string/right_header_str" />
+            android:text="@string/right_header_str"
+            android:textColor="@android:color/holo_red_dark"/>
     </LinearLayout>
 
     <TextView
@@ -74,25 +75,50 @@
         android:text="@string/text_space"/>
 
     <Button
+        android:id="@+id/button_video"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_video_str"
-        android:id="@+id/button_video"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:onClick="videoDst"/>
+        android:layout_centerVertical="true"
+        android:onClick="videoDst"
+        android:text="@string/button_video_str"/>
 
     <EditText
         android:id="@+id/edit_message_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hint="@string/edit_message_video_str"
         android:textColor="@android:color/white"
-        android:textColorHint="@android:color/darker_gray"
-        android:hint="@string/edit_message_video_str"/>
+        android:textColorHint="@android:color/darker_gray"/>
 
-    <TextView
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+    <RadioButton
+        android:id="@+id/radio_btn_arrows"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_space"/>
-</LinearLayout>
+        android:buttonTint="@android:color/holo_blue_dark"
+        android:checked="true"
+        android:onClick="onRadioButtonClicked"
+        android:text="@string/radio_button_arrows"
+        android:textColor="@android:color/holo_blue_light"/>
+
+    <RadioButton
+        android:id="@+id/radio_btn_sensors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@android:color/holo_blue_dark"
+        android:onClick="onRadioButtonClicked"
+        android:text="@string/radio_button_sensors"
+        android:textColor="@android:color/holo_blue_light"/>
+</RadioGroup>
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="@string/text_space"/>
+    </LinearLayout>

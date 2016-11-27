@@ -6,6 +6,8 @@
     <string name="left_header_str">Left Side (55%)!!!</string>
     <string name="middle_header_str">Middle (15%)</string>
     <string name="right_header_str">Right Side (30%) !!!</string>
+    <string name="radio_button_arrows">Use Arrows</string>
+    <string name="radio_button_sensors">Use Phone Sensors</string>
 
     <string name="video_result_str"></string>
     <string name="button_video_str">STREAM VIDEO</string>

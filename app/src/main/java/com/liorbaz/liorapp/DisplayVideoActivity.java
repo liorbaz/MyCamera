@@ -1,7 +1,6 @@
 package com.liorbaz.liorapp;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 //import android.media.MediaPlayer;
 //import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,6 +33,8 @@ public class DisplayVideoActivity extends AppCompatActivity {
     private ProgressDialog mDialog;
     private WebView mWebView;
     private Toast mToastToShow;
+    private boolean mVideoArrowsEnable;
+    private String mUrl;
 
     /**
      * Servo Server socket information
@@ -46,9 +47,17 @@ public class DisplayVideoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Get Control Method from user (MainActivity)
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            mVideoArrowsEnable = b.getBoolean(MainActivity.CONTROL_METHOD);
+        }
+
+        /**
+         * Handle Servo Motor server details
+         * */
         mServoServerPort = Integer.parseInt(getResources().getString(R.string.servo_server_port));
         String ipStr = getResources().getString(R.string.servo_server_ip);
-
         try {
             mServoServerIp = InetAddress.getByName(ipStr);
         } catch (UnknownHostException aE) {
@@ -56,12 +65,17 @@ public class DisplayVideoActivity extends AppCompatActivity {
             aE.printStackTrace();
         }
 
-        Log.i(LOG_TAG, "DisplayVideoActivity: Before \"new ServoAsyncTask().execute();");
         //Initiate connection with Servo Motor Server
         new ServoAsyncTask().execute();
 
-        //Get the layout from video_main.xml
-        setContentView(R.layout.activity_display_video);
+        if (mVideoArrowsEnable) {
+            //Get layout with control sensors
+            setContentView(R.layout.activity_display_video_arrows);
+        } else {
+            //Get layout with control arrows
+            setContentView(R.layout.activity_display_video_sensors);
+        }
+
 
         //Find your VideoView in your video_main.xml layout
         mWebView = (WebView) findViewById(R.id.WebView);
@@ -70,10 +84,11 @@ public class DisplayVideoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //Get URL from user (MainActivity)
-        Intent intent = getIntent();
-        String Url = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        if (b != null) {
+            mUrl = b.getString(MainActivity.EXTRA_MESSAGE);
+        }
 //        Uri videoStreamUri = Uri.parse(Url);
-        Log.i(LOG_TAG, "DisplayVideoActivity: - URL string =" + Url);
+        Log.i(LOG_TAG, "DisplayVideoActivity: - URL string =" + mUrl);
 
         /********************************
          * Execute StreamVideo AsyncTask
@@ -103,7 +118,7 @@ public class DisplayVideoActivity extends AppCompatActivity {
 //            mWebView.setMediaController(mediacontroller);
 //            mWebView.setVideoURI(videoStreamUri);
             Log.e(LOG_TAG, "Before mWebView.loadUrl(Url);");
-            mWebView.loadUrl(Url);
+            mWebView.loadUrl(mUrl);
             Log.e(LOG_TAG, "After mWebView.loadUrl(Url);");
 
         } catch (Exception e) {
