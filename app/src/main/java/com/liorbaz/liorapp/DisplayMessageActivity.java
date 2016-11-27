@@ -19,7 +19,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
     public final static String NUM_OF_REPLIES = "4 ";
 
     protected ListView mPingOutputListView;
-//    protected LogArrayAdapter mAdapter;
     protected ArrayAdapter<String> mAdapter;
 
     @Override
@@ -57,21 +56,19 @@ public class DisplayMessageActivity extends AppCompatActivity {
     private class PingAsyncTask extends AsyncTask<String, String, Void> {
 
         @Override
-        protected Void doInBackground(String... ip) {
-            executePing(ip[0]);
-            return null;
-        }
-
-        @Override
         protected void onPreExecute() {
             super.onPreExecute();
             mPingOutputListView = (ListView) findViewById(R.id.ping_output_list);
             mAdapter = new ArrayAdapter (DisplayMessageActivity.this, R.layout.ping_result_list_layout);
-//            mAdapter = new ArrayAdapter (DisplayMessageActivity.this, R.layout.activity_display_message, R.id.ping_output_list);
-//                    new LogArrayAdapter (DisplayMessageActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, new String[]{"LLL"});
 
             // Assign adapter to ListView
             mPingOutputListView.setAdapter(mAdapter);
+        }
+
+        @Override
+        protected Void doInBackground(String... ip) {
+            executePing(ip[0]);
+            return null;
         }
 
         /**
@@ -105,25 +102,4 @@ public class DisplayMessageActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
-
-
-//    public class LogArrayAdapter extends ArrayAdapter {
-//        private final Context context;
-//        private final String[] values;
-//
-//        public LogArrayAdapter (Context context, String[] values) {
-//            super(context, R.layout.activity_display_message, values);
-//            this.context = context;
-//            this.values = values;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            ListView listView = (ListView) findViewById(R.id.ping_output_list);
-//            return listView;
-//        }
-//    }
 }

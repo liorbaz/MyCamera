@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 //import android.media.MediaPlayer;
 //import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.NavUtils;
@@ -14,28 +15,50 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-//    /**
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
-//     * Event handler called when the user presses "Right Arrow"
-//    /**
-//
-//    }
-//        Toast.makeText(this, "Left!!!", Toast.LENGTH_LONG).show();
-//    public void sendLeft(View view) {
-//     */
-//     * Event handler called when the user presses "Left Arrow"
+
 public class DisplayVideoActivity extends AppCompatActivity {
+
+    final static byte SERVO_CMD_RESET = 0;
+    final static byte SERVO_CMD_STOP = 1;
+    final static byte SERVO_CMD_LEFT = 2;
+    final static byte SERVO_CMD_RIGHT = 3;
 
     // Declare variables
     private static final String LOG_TAG = "-- -- MyDebug -->";
-
     private ProgressDialog mDialog;
     private WebView mWebView;
     private Toast mToastToShow;
 
+    /**
+     * Servo Server socket information
+     */
+    protected DatagramSocket mClientSocket;
+    protected int mServoServerPort;
+    protected InetAddress mServoServerIp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mServoServerPort = Integer.parseInt(getResources().getString(R.string.servo_server_port));
+        String ipStr = getResources().getString(R.string.servo_server_ip);
+
+        try {
+            mServoServerIp = InetAddress.getByName(ipStr);
+        } catch (UnknownHostException aE) {
+            Log.i(LOG_TAG, "DisplayVideoActivity: mServoServerIp = InetAddress.getByName(" + ipStr + ")");
+            aE.printStackTrace();
+        }
+
+        Log.i(LOG_TAG, "DisplayVideoActivity: Before \"new ServoAsyncTask().execute();");
+        //Initiate connection with Servo Motor Server
+        new ServoAsyncTask().execute();
 
         //Get the layout from video_main.xml
         setContentView(R.layout.activity_display_video);
@@ -56,7 +79,7 @@ public class DisplayVideoActivity extends AppCompatActivity {
          * Execute StreamVideo AsyncTask
          ********************************/
         // Create a progressbar
-        mDialog = new ProgressDialog(DisplayVideoActivity.this);
+//        mDialog = new ProgressDialog(DisplayVideoActivity.this);
 
         // Set progressbar title
         mDialog.setTitle(getResources().getString(R.string.loading_video_str));
@@ -122,8 +145,48 @@ public class DisplayVideoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Event handler called when the user presses "Left Arrow"
+     */
+    public void sendLeft(View view) {
+        // Show the toast and starts the countdown
+        showToast("Left", 200);
 
-    public void showToast(String msg, int toastDurationInMilliSeconds) {
+        if (mClientSocket.isConnected()) {
+            byte sendData[] = {SERVO_CMD_LEFT};
+
+            try {
+                DatagramPacket cmdPacket = new DatagramPacket(sendData, sendData.length, mServoServerIp, mServoServerPort);
+                mClientSocket.send(cmdPacket);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to send LEFT command to servo" + e.getMessage());
+            }
+        }
+    }
+
+
+    /**
+     * Event handler called when the user presses "Right Arrow"
+     */
+    public void sendRight(View view) {
+        showToast("Right", 200);
+
+        if (mClientSocket.isConnected()) {
+            byte sendData[] = {SERVO_CMD_RIGHT};
+
+            try {
+                DatagramPacket cmdPacket = new DatagramPacket(sendData, sendData.length, mServoServerIp, mServoServerPort);
+                mClientSocket.send(cmdPacket);
+
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Failed to send RIGHT command to servo" + e.getMessage());
+            }
+        }
+    }
+
+
+    //Use AsyncTask in order to perform ping in a different thread
+    private void showToast(String msg, int toastDurationInMilliSeconds) {
 
         // Set the toast and duration
         mToastToShow = Toast.makeText(this, msg, Toast.LENGTH_LONG);
@@ -145,21 +208,52 @@ public class DisplayVideoActivity extends AppCompatActivity {
         toastCountDown.start();
     }
 
-    /**
-     * Event handler called when the user presses "Left Arrow"
-     */
-    public void sendLeft(View view) {
-        // Show the toast and starts the countdown
-        showToast("Left", 200);
-//        Toast.makeText(this, "Left!!!", Toast.LENGTH_SHORT).show();
-    }
 
-    /**
-     * Event handler called when the user presses "Right Arrow"
-     */
-    public void sendRight(View view) {
-        showToast("Right", 200);
-//        Toast.makeText(this, "Right!!!", Toast.LENGTH_SHORT).show();
-    }
+    private class ServoAsyncTask extends AsyncTask<String, String, Void> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.i(LOG_TAG, "ServoAsyncTask: onPreExecute()");
+            mDialog = new ProgressDialog(DisplayVideoActivity.this);
+
+            // Set progressbar title
+            mDialog.setTitle(getResources().getString(R.string.loading_video_str));
+
+            // Set progressbar message
+            mDialog.setMessage(getResources().getString(R.string.buffering_video_str));
+            mDialog.setIndeterminate(false);
+            mDialog.setCancelable(true);
+
+            // Show progressbar
+            mDialog.show();
+        }
+
+
+        @Override
+        protected Void doInBackground(String... ip) {
+            Log.i(LOG_TAG, "ServoAsyncTask: doInBackground()");
+            //Initiate UDP socket to server
+            try {
+                mClientSocket = new DatagramSocket();
+                mClientSocket.connect(mServoServerIp, mServoServerPort);
+            } catch (SocketException e) {
+                Log.e(LOG_TAG, "Failed to create UDP socket" + e.getMessage());
+                mClientSocket.close();
+            } finally {
+                mDialog.dismiss();
+                return null;
+            }
+        }
+
+
+        /**
+         * The system calls this to perform work in the UI thread and delivers
+         * the result from doInBackground()
+         */
+        @Override
+        protected void onProgressUpdate(String... aStrings) {
+            mDialog.setProgress(10/*TODO: replace with a parameter*/);
+        }
+    }
 }
