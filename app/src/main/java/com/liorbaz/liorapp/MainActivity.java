@@ -7,6 +7,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * TODO:
+ * 1. Increase webcam resolution and see how it affects the WebView layout
+ * 2. Progress bar: (A) UDP isConnected bug, (B) Apply for webcam loading as well.
+ * 3. Radio button on main page for Video activity: Arrows םר אןךא
+ * */
+
 public class MainActivity extends AppCompatActivity {
 
     public final static String EXTRA_MESSAGE = "com.liorbaz.liorapp.MESSAGE";
@@ -15,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int OCTET_IP_MIN_VAL = 0;
     private final static String OCTET_IP_DELIMITER = "\\.";
 
-    private String mValidIpString = "";
+    private String mValidIpString  = "";
     private String mVideoUrlString = "";
 
 
