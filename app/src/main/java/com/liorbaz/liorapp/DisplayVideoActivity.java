@@ -3,15 +3,21 @@ package com.liorbaz.liorapp;
 import android.app.ProgressDialog;
 //import android.media.MediaPlayer;
 //import android.net.Uri;
+import android.content.Intent;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.net.DatagramPacket;
@@ -20,16 +26,20 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import static com.liorbaz.liorapp.DisplayVideoActivity.LOG_TAG;
+
 
 public class DisplayVideoActivity extends AppCompatActivity {
 
-    final static byte SERVO_CMD_RESET = 0;
-    final static byte SERVO_CMD_STOP = 1;
-    final static byte SERVO_CMD_LEFT = 2;
-    final static byte SERVO_CMD_RIGHT = 3;
+    public final static String SERVO_CMD = "com.liorbaz.liorapp.SERVO_CMD";
+    final static byte SERVO_CMD_NOP = '0';
+    final static byte SERVO_CMD_STOP = '1';
+    final static byte SERVO_CMD_LEFT = '2';
+    final static byte SERVO_CMD_RIGHT = '3';
+    final static byte SERVO_CMD_RESET = '4';
 
     // Declare variables
-    private static final String LOG_TAG = "-- -- MyDebug -->";
+    protected static final String LOG_TAG = "-- -- MyDebug -->";
     private ProgressDialog mDialog;
     private WebView mWebView;
     private Toast mToastToShow;
@@ -43,6 +53,8 @@ public class DisplayVideoActivity extends AppCompatActivity {
     protected int mServoServerPort;
     protected InetAddress mServoServerIp;
 
+    protected Thread mServoSendCmdThread = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +65,9 @@ public class DisplayVideoActivity extends AppCompatActivity {
             mVideoArrowsEnable = b.getBoolean(MainActivity.CONTROL_METHOD);
         }
 
-        /**
-         * Handle Servo Motor server details
-         * */
+        /*************************************
+         * Handle Servo Motor server details *
+         *************************************/
         mServoServerPort = Integer.parseInt(getResources().getString(R.string.servo_server_port));
         String ipStr = getResources().getString(R.string.servo_server_ip);
         try {
@@ -65,23 +77,56 @@ public class DisplayVideoActivity extends AppCompatActivity {
             aE.printStackTrace();
         }
 
-        //Initiate connection with Servo Motor Server
+        /***********************************************
+         * Initiate connection with Servo Motor Server *
+         ***********************************************/
         new ServoAsyncTask().execute();
 
+        /*************************************
+         * Handle Servo Motor server details *
+         *************************************/
         if (mVideoArrowsEnable) {
             //Get layout with control sensors
             setContentView(R.layout.activity_display_video_arrows);
-        } else {
-            //Get layout with control arrows
-            setContentView(R.layout.activity_display_video_sensors);
-        }
+            ImageButton btnRight = (ImageButton) findViewById(R.id.RightBtn);
+            ImageButton btnLeft = (ImageButton) findViewById(R.id.LeftBtn);
 
+            //Define OnTocuh listener
+            View.OnTouchListener listener = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        if (mServoSendCmdThread == null) {
+                            Log.d(LOG_TAG, "Entering onTouch-> ACTION_DOWN");
+                            handleBtnTouch(v);
+                        }
+                    }
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (mServoSendCmdThread != null) {
+                            Log.d(LOG_TAG, "Entering onTouch-> ACTION_UP");
+                            handleBtnRelease(v);
+                        }
+                    }
+                    return false;
+                }
+            };
+
+            //Add listener to buttons
+            btnLeft.setOnTouchListener(listener);
+            btnRight.setOnTouchListener(listener);
+        } else {
+            //Get layout with no arrows (video only)
+            setContentView(R.layout.activity_display_video_sensors);
+            SensorManager sMgr = (SensorManager) this.getSystemService(SENSOR_SERVICE);
+        }
 
         //Find your VideoView in your video_main.xml layout
         mWebView = (WebView) findViewById(R.id.WebView);
 
         //Display Back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         //Get URL from user (MainActivity)
         if (b != null) {
@@ -97,10 +142,26 @@ public class DisplayVideoActivity extends AppCompatActivity {
 //        mDialog = new ProgressDialog(DisplayVideoActivity.this);
 
         // Set progressbar title
-        mDialog.setTitle(getResources().getString(R.string.loading_video_str));
+        mDialog.setTitle(
+
+                getResources()
+
+                        .
+
+                                getString(R.string.loading_video_str)
+
+        );
 
         // Set progressbar message
-        mDialog.setMessage(getResources().getString(R.string.buffering_video_str));
+        mDialog.setMessage(
+
+                getResources()
+
+                        .
+
+                                getString(R.string.buffering_video_str)
+
+        );
         mDialog.setIndeterminate(false);
         mDialog.setCancelable(true);
 
@@ -110,7 +171,9 @@ public class DisplayVideoActivity extends AppCompatActivity {
         /*******************
          * Media Controller
          *******************/
-        try {
+        try
+
+        {
             // Start the MediaController
 //            MediaController mediacontroller = new MediaController(DisplayVideoActivity.this);
 //            mediacontroller.setAnchorView(mWebView);
@@ -160,48 +223,70 @@ public class DisplayVideoActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Event handler called when the user presses "Left Arrow"
-     */
-    public void sendLeft(View view) {
-        // Show the toast and starts the countdown
-        showToast("Left", 200);
+    public void handleBtnTouch(View v) {
+        byte servoCmd = SERVO_CMD_NOP;
 
-        if (mClientSocket.isConnected()) {
-            byte sendData[] = {SERVO_CMD_LEFT};
+        switch (v.getId()) {
+            case R.id.LeftBtn:
+                Log.d(LOG_TAG, "handleBtnTouch: case R.id.LeftBtn");
+                ImageButton btnLeft = (ImageButton) findViewById(R.id.LeftBtn);
+                btnLeft.setPressed(true);
+                servoCmd = SERVO_CMD_LEFT;
+                showToast("Left", 200);
+                break;
 
-            try {
-                DatagramPacket cmdPacket = new DatagramPacket(sendData, sendData.length, mServoServerIp, mServoServerPort);
-                mClientSocket.send(cmdPacket);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to send LEFT command to servo" + e.getMessage());
-            }
+            case R.id.RightBtn:
+                Log.d(LOG_TAG, "handleBtnTouch: case R.id.RightBtn");
+                ImageButton btnRight = (ImageButton) findViewById(R.id.RightBtn);
+                btnRight.setPressed(true);
+                servoCmd = SERVO_CMD_RIGHT;
+                showToast("Right", 200);
+                break;
+
+            default:
+                break;
+        }
+
+        /****************************************************************
+         * Start a separate thread for sending commands to servo server *
+         ****************************************************************/
+        if (servoCmd != SERVO_CMD_NOP) {
+            Runnable r = new ServoSendCmdThread(servoCmd);
+
+            mServoSendCmdThread = new Thread(r);
+            mServoSendCmdThread.start();
         }
     }
 
+    public void handleBtnRelease(View v) {
+        switch (v.getId()) {
+            case R.id.LeftBtn:
+                Log.d(LOG_TAG, "handleBtnRelease: case R.id.LeftBtn");
+                ImageButton btnLeft = (ImageButton) findViewById(R.id.LeftBtn);
+                btnLeft.setPressed(false);
+                break;
 
-    /**
-     * Event handler called when the user presses "Right Arrow"
-     */
-    public void sendRight(View view) {
-        showToast("Right", 200);
+            case R.id.RightBtn:
+                Log.d(LOG_TAG, "handleBtnRelease: case R.id.RightBtn");
+                ImageButton btnRight = (ImageButton) findViewById(R.id.RightBtn);
+                btnRight.setPressed(false);
+                break;
 
-        if (mClientSocket.isConnected()) {
-            byte sendData[] = {SERVO_CMD_RIGHT};
+            default:
+                break;
+        }
 
-            try {
-                DatagramPacket cmdPacket = new DatagramPacket(sendData, sendData.length, mServoServerIp, mServoServerPort);
-                mClientSocket.send(cmdPacket);
-
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to send RIGHT command to servo" + e.getMessage());
-            }
+        /*******************************
+         * Destroy mServoSendCmdThread *
+         *******************************/
+        if (mServoSendCmdThread != null) {
+            mServoSendCmdThread.interrupt();
+            mServoSendCmdThread = null;
         }
     }
-
 
     //Use AsyncTask in order to perform ping in a different thread
-    private void showToast(String msg, int toastDurationInMilliSeconds) {
+    protected void showToast(String msg, int toastDurationInMilliSeconds) {
 
         // Set the toast and duration
         mToastToShow = Toast.makeText(this, msg, Toast.LENGTH_LONG);
@@ -257,10 +342,9 @@ public class DisplayVideoActivity extends AppCompatActivity {
                 mClientSocket.close();
             } finally {
                 mDialog.dismiss();
-                return null;
             }
+            return null;
         }
-
 
         /**
          * The system calls this to perform work in the UI thread and delivers
@@ -269,6 +353,86 @@ public class DisplayVideoActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... aStrings) {
             mDialog.setProgress(10/*TODO: replace with a parameter*/);
+        }
+    }
+
+
+    /**
+     * A separate thread which will send a servo command as long as long
+     * as the user command is still valid (e.g., button is still pressed)
+     */
+    private class ServoSendCmdThread implements Runnable {
+        private final Byte mCmdServoCmd;
+
+        private ServoSendCmdThread(Byte cmdServoCmd) {
+            mCmdServoCmd = cmdServoCmd;
+        }
+
+        @Override
+        public void run() {
+            while(!Thread.interrupted()) {
+                try {
+                    switch (mCmdServoCmd) {
+                        case SERVO_CMD_LEFT: {
+                            Log.d(LOG_TAG, "Thread.run: case SERVO_CMD_LEFT");
+                            sendLeft();
+                            break;
+                        }
+
+                        case SERVO_CMD_RIGHT: {
+                            Log.d(LOG_TAG, "Thread.run: case SERVO_CMD_RIGHT");
+                            sendRight();
+                            break;
+                        }
+
+                        default: {
+                            Log.d(LOG_TAG, "Thread.run: Unsupported SERVO_CMD (" + mCmdServoCmd.toString() + ")");
+                            break;
+                        }
+                    }
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+            Log.d(LOG_TAG, "Thread.run: exiting thread (" + mCmdServoCmd.toString() + ")");
+        }
+
+        /**
+         * Called when the user presses "Left Arrow"
+         */
+        private void sendLeft() {
+            // Show the toast and starts the countdown
+            Log.d(LOG_TAG, "Thread: Entering sendLeft");
+
+            if (mClientSocket.isConnected()) {
+                byte sendData[] = {SERVO_CMD_LEFT};
+
+                try {
+                    DatagramPacket cmdPacket = new DatagramPacket(sendData, sendData.length, mServoServerIp, mServoServerPort);
+                    mClientSocket.send(cmdPacket);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Failed to send LEFT command to servo" + e.getMessage());
+                }
+            }
+        }
+
+        /**
+         * Called when the user presses "Right Arrow"
+         */
+        private void sendRight() {
+            Log.d(LOG_TAG, "Thread: Entering sendRight");
+
+            if (mClientSocket.isConnected()) {
+                byte sendData[] = {SERVO_CMD_RIGHT};
+
+                try {
+                    DatagramPacket cmdPacket = new DatagramPacket(sendData, sendData.length, mServoServerIp, mServoServerPort);
+                    mClientSocket.send(cmdPacket);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Failed to send RIGHT command to servo" + e.getMessage());
+                }
+            }
         }
     }
 }

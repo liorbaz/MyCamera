@@ -23,8 +23,7 @@
             android:layout_height="@dimen/video_button_size"
             android:background="@android:color/transparent"
             android:contentDescription="@string/arrow_desc_right"
-            android:src="@drawable/btn_arrow_selector_left"
-            android:onClick="sendLeft"/>
+            android:src="@drawable/btn_arrow_selector_left"/>
 
         <ImageButton
             android:id="@+id/RightBtn"
@@ -32,7 +31,6 @@
             android:layout_height="@dimen/video_button_size"
             android:background="@android:color/transparent"
             android:contentDescription="@string/arrow_desc_right"
-            android:src="@drawable/btn_arrow_selector_right"
-            android:onClick="sendRight"/>
+            android:src="@drawable/btn_arrow_selector_right"/>
     </LinearLayout>
 </LinearLayout>
